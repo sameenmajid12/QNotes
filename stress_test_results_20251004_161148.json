@@ -1,0 +1,338 @@
+{
+  "metrics": {
+    "total_tests": 21,
+    "passed_tests": 12,
+    "failed_tests": 9,
+    "average_accuracy": 60.0,
+    "average_response_time": 2.0296411514282227,
+    "max_response_time": 12.124627113342285,
+    "min_response_time": 0.0736091136932373,
+    "error_rate": 42.857142857142854,
+    "concurrent_performance": {
+      "3_requests": 100.0,
+      "5_requests": 100.0,
+      "8_requests": 100.0
+    }
+  },
+  "detailed_results": [
+    {
+      "test_name": "Basic API Connectivity",
+      "success": true,
+      "accuracy_score": 100.0,
+      "response_time": 9.87615704536438,
+      "error_message": null,
+      "extracted_data": null
+    },
+    {
+      "test_name": "Company Extraction - JPMorgan Chase & Co.",
+      "success": false,
+      "accuracy_score": 0.0,
+      "response_time": 5.307318210601807,
+      "error_message": "'NoneType' object has no attribute 'upper'",
+      "extracted_data": null
+    },
+    {
+      "test_name": "Financial Metrics - JPMorgan Chase & Co.",
+      "success": false,
+      "accuracy_score": 60.0,
+      "response_time": 12.124627113342285,
+      "error_message": null,
+      "extracted_data": {
+        "total_revenue": 42500,
+        "revenue_yoy_growth": 0.068,
+        "net_income": 13400,
+        "net_income_yoy_growth": 0.061,
+        "net_interest_income": null,
+        "noninterest_revenue": null,
+        "net_interest_margin": 0.0274,
+        "efficiency_ratio": 0.56,
+        "return_on_equity": 0.178,
+        "common_equity_tier1_ratio": 0.159,
+        "provision_credit_losses": 1400,
+        "book_value_per_share": null,
+        "debt_to_equity": null,
+        "current_ratio": null,
+        "gross_margin": null,
+        "operating_margin": null,
+        "earnings_per_share": null,
+        "diluted_eps": null,
+        "quarter": "Q1",
+        "year": 2025,
+        "filing_date": null
+      }
+    },
+    {
+      "test_name": "SMAP Generation - JPMorgan Chase & Co.",
+      "success": false,
+      "accuracy_score": 0.0,
+      "response_time": 4.897983074188232,
+      "error_message": null,
+      "extracted_data": {
+        "subjective_length": 36,
+        "metrics_length": 24,
+        "assessment_length": 19,
+        "plan_length": 33
+      }
+    },
+    {
+      "test_name": "Company Extraction - Apple Inc.",
+      "success": false,
+      "accuracy_score": 0.0,
+      "response_time": 6.996593236923218,
+      "error_message": "'NoneType' object has no attribute 'upper'",
+      "extracted_data": null
+    },
+    {
+      "test_name": "Financial Metrics - Apple Inc.",
+      "success": false,
+      "accuracy_score": 0.0,
+      "response_time": 0.13968300819396973,
+      "error_message": null,
+      "extracted_data": {
+        "total_revenue": null,
+        "revenue_yoy_growth": null,
+        "net_income": null,
+        "net_income_yoy_growth": null,
+        "net_interest_income": null,
+        "noninterest_revenue": null,
+        "net_interest_margin": null,
+        "efficiency_ratio": null,
+        "return_on_equity": null,
+        "common_equity_tier1_ratio": null,
+        "provision_credit_losses": null,
+        "book_value_per_share": null,
+        "debt_to_equity": null,
+        "current_ratio": null,
+        "gross_margin": null,
+        "operating_margin": null,
+        "earnings_per_share": null,
+        "diluted_eps": null,
+        "quarter": null,
+        "year": null,
+        "filing_date": null
+      }
+    },
+    {
+      "test_name": "SMAP Generation - Apple Inc.",
+      "success": false,
+      "accuracy_score": 0.0,
+      "response_time": 0.5128340721130371,
+      "error_message": null,
+      "extracted_data": {
+        "subjective_length": 36,
+        "metrics_length": 24,
+        "assessment_length": 19,
+        "plan_length": 33
+      }
+    },
+    {
+      "test_name": "Company Extraction - TestCorp Inc.",
+      "success": false,
+      "accuracy_score": 0.0,
+      "response_time": 0.10153484344482422,
+      "error_message": null,
+      "extracted_data": {
+        "company_name": "Unknown Company",
+        "ticker": "N/A",
+        "filing_type": "SEC Filing",
+        "quarter_year": "N/A",
+        "industry": "N/A"
+      }
+    },
+    {
+      "test_name": "Financial Metrics - TestCorp Inc.",
+      "success": false,
+      "accuracy_score": 0.0,
+      "response_time": 0.14103078842163086,
+      "error_message": null,
+      "extracted_data": {
+        "total_revenue": null,
+        "revenue_yoy_growth": null,
+        "net_income": null,
+        "net_income_yoy_growth": null,
+        "net_interest_income": null,
+        "noninterest_revenue": null,
+        "net_interest_margin": null,
+        "efficiency_ratio": null,
+        "return_on_equity": null,
+        "common_equity_tier1_ratio": null,
+        "provision_credit_losses": null,
+        "book_value_per_share": null,
+        "debt_to_equity": null,
+        "current_ratio": null,
+        "gross_margin": null,
+        "operating_margin": null,
+        "earnings_per_share": null,
+        "diluted_eps": null,
+        "quarter": null,
+        "year": null,
+        "filing_date": null
+      }
+    },
+    {
+      "test_name": "SMAP Generation - TestCorp Inc.",
+      "success": false,
+      "accuracy_score": 0.0,
+      "response_time": 0.4475669860839844,
+      "error_message": null,
+      "extracted_data": {
+        "subjective_length": 36,
+        "metrics_length": 24,
+        "assessment_length": 19,
+        "plan_length": 33
+      }
+    },
+    {
+      "test_name": "Concurrent Load (3 requests)",
+      "success": true,
+      "accuracy_score": 100.0,
+      "response_time": 0.2220911979675293,
+      "error_message": null,
+      "extracted_data": {
+        "successful_requests": 3,
+        "total_requests": 3,
+        "success_rate": 1.0,
+        "avg_time_per_request": 0.07403039932250977
+      }
+    },
+    {
+      "test_name": "Concurrent Load (5 requests)",
+      "success": true,
+      "accuracy_score": 100.0,
+      "response_time": 0.5101218223571777,
+      "error_message": null,
+      "extracted_data": {
+        "successful_requests": 5,
+        "total_requests": 5,
+        "success_rate": 1.0,
+        "avg_time_per_request": 0.10202436447143555
+      }
+    },
+    {
+      "test_name": "Concurrent Load (8 requests)",
+      "success": true,
+      "accuracy_score": 100.0,
+      "response_time": 0.5071518421173096,
+      "error_message": null,
+      "extracted_data": {
+        "successful_requests": 8,
+        "total_requests": 8,
+        "success_rate": 1.0,
+        "avg_time_per_request": 0.0633939802646637
+      }
+    },
+    {
+      "test_name": "Edge Case - Empty text",
+      "success": true,
+      "accuracy_score": 100.0,
+      "response_time": 0.08902502059936523,
+      "error_message": null,
+      "extracted_data": {
+        "company_name": "Unknown Company",
+        "ticker": "N/A",
+        "filing_type": "SEC Filing",
+        "quarter_year": "N/A",
+        "industry": "N/A"
+      }
+    },
+    {
+      "test_name": "Edge Case - Very short text",
+      "success": true,
+      "accuracy_score": 100.0,
+      "response_time": 0.12227201461791992,
+      "error_message": null,
+      "extracted_data": {
+        "company_name": "Unknown Company",
+        "ticker": "N/A",
+        "filing_type": "SEC Filing",
+        "quarter_year": "N/A",
+        "industry": "N/A"
+      }
+    },
+    {
+      "test_name": "Edge Case - Malformed text",
+      "success": true,
+      "accuracy_score": 100.0,
+      "response_time": 0.1295018196105957,
+      "error_message": null,
+      "extracted_data": {
+        "company_name": "Unknown Company",
+        "ticker": "N/A",
+        "filing_type": "SEC Filing",
+        "quarter_year": "N/A",
+        "industry": "N/A"
+      }
+    },
+    {
+      "test_name": "Edge Case - Very long text",
+      "success": true,
+      "accuracy_score": 100.0,
+      "response_time": 0.0989527702331543,
+      "error_message": null,
+      "extracted_data": {
+        "company_name": "Unknown Company",
+        "ticker": "N/A",
+        "filing_type": "SEC Filing",
+        "quarter_year": "N/A",
+        "industry": "N/A"
+      }
+    },
+    {
+      "test_name": "Edge Case - Non-English text",
+      "success": true,
+      "accuracy_score": 100.0,
+      "response_time": 0.11926603317260742,
+      "error_message": null,
+      "extracted_data": {
+        "company_name": "Unknown Company",
+        "ticker": "N/A",
+        "filing_type": "SEC Filing",
+        "quarter_year": "N/A",
+        "industry": "N/A"
+      }
+    },
+    {
+      "test_name": "Edge Case - Special characters",
+      "success": true,
+      "accuracy_score": 100.0,
+      "response_time": 0.08440899848937988,
+      "error_message": null,
+      "extracted_data": {
+        "company_name": "Unknown Company",
+        "ticker": "N/A",
+        "filing_type": "SEC Filing",
+        "quarter_year": "N/A",
+        "industry": "N/A"
+      }
+    },
+    {
+      "test_name": "Edge Case - HTML-like text",
+      "success": true,
+      "accuracy_score": 100.0,
+      "response_time": 0.12073516845703125,
+      "error_message": null,
+      "extracted_data": {
+        "company_name": "Unknown Company",
+        "ticker": "N/A",
+        "filing_type": "SEC Filing",
+        "quarter_year": "N/A",
+        "industry": "N/A"
+      }
+    },
+    {
+      "test_name": "Edge Case - Numbers only",
+      "success": true,
+      "accuracy_score": 100.0,
+      "response_time": 0.0736091136932373,
+      "error_message": null,
+      "extracted_data": {
+        "company_name": "Unknown Company",
+        "ticker": "N/A",
+        "filing_type": "SEC Filing",
+        "quarter_year": "N/A",
+        "industry": "N/A"
+      }
+    }
+  ],
+  "timestamp": "2025-10-04T16:11:48.140816"
+}
