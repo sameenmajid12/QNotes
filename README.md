@@ -51,7 +51,7 @@ npm install
 npm start
 ```
 
-## 🎓 Three Learning Modes
+## 🎓 Four Learning Features
 
 ### 1. Learn Mode (Read & Hover)
 - **Features**: 
@@ -75,6 +75,17 @@ npm start
     - ⚠️ What they missed (e.g., "You missed Gross Margin trend")
     - 💡 Suggestions ("Connect debt level to refinancing risk")
     - Score out of 100 for Clarity, Completeness, Accuracy
+
+### 4. Flashcard Generation (Personalized Finance Quizlets)
+- **Three Layers of Financial Learning**:
+  - **📖 Core Vocabulary & Ratios**: Financial jargon and definitions from filings
+  - **📊 Company-Specific Metrics**: Key numbers auto-extracted from the 10-Q  
+  - **🧠 Analytical Reasoning**: Scenario-based questions requiring interpretation
+- **Examples**:
+  - *Vocabulary*: "What is Free Cash Flow?" → "Cash from operations – CapEx"
+  - *Company Metric*: "What was Tesla's EPS this quarter?" → "$0.66 vs $0.64 consensus"
+  - *Analytical*: "Revenue up, gross margin down. What does this suggest?" → "Cost pressures..."
+- **Features**: Swipe like Quizlet, progress tracking, adaptive difficulty
 
 ## 🎤 Voice Agent Integration
 
@@ -132,6 +143,11 @@ npm start
 - `POST /api/session/{id}/practice/submit` - Submit SMAP
 - `GET /api/session/{id}/feedback` - Get AI feedback
 
+### Flashcard Generation (Feature #4)
+- `GET /api/session/{id}/flashcards` - Generate comprehensive flashcards
+- `GET /api/session/{id}/flashcards/category/{category}` - Category-specific flashcards
+- `POST /api/session/{id}/flashcards/save-progress` - Save study progress
+
 ### Voice Features
 - `GET /api/session/{id}/earnings-call` - Earnings call simulation
 - `GET /api/session/{id}/audio-briefing` - SMAP audio briefing
@@ -151,6 +167,7 @@ Tests include:
 - ✅ Learn Mode with hover definitions
 - ✅ Practice Mode with SMAP writing
 - ✅ AI Feedback with detailed scoring
+- ✅ Flashcard generation (3 layers of learning)
 - ✅ Voice agent features
 - ✅ Session management
 
