@@ -56,7 +56,7 @@ class SnowflakeService:
             print(f"📋 Schema: {self.connection_config['schema']}")
             
             # In production:
-            # self.connection = snowflake.connector.connect(**self.connection_config)
+            self.connection = snowflake.connector.connect(**self.connection_config)
             
         except Exception as e:
             print(f"⚠️ Snowflake connection simulation mode: {e}")
