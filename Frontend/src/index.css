@@ -1,3 +1,4 @@
+/* Existing styles for root, body, colors, buttons... */
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -24,6 +25,8 @@ a:hover {
 
 body {
   display: block; /* Override Vite default */
+  margin: 0;
+  padding: 0;
 }
 
 .container,
@@ -84,12 +87,8 @@ button:focus-visible {
   height: 100vh;
 }
 
-.container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  padding: 1rem;
+.auth-view {
+    height: 100%;
 }
 
 .card {
@@ -184,8 +183,250 @@ input:focus {
   border-radius: 8px;
   cursor: pointer;
   transition: background 0.3s;
+  width: auto; /* Override .primary-btn width */
+  margin-top: 1.5rem;
 }
 
 .logout-btn:hover {
   background: #e13d3d;
+}
+
+/* --- Landing Page Styling --- */
+
+.landing-page {
+  min-height: 100vh;
+  padding: 0;
+  background-color: white; /* Match the design background */
+  color: #213547; /* Dark text for light background */
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 5rem; /* Adjust padding as needed */
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.logo-placeholder {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #4a3aff;
+}
+
+.auth-buttons button {
+  padding: 0.6em 1.5em;
+  margin-left: 0.75rem;
+  width: auto;
+}
+
+.login-btn {
+  background-color: #4a3aff;
+  color: white;
+}
+
+.login-btn:hover {
+    background-color: #5848e5;
+}
+
+.secondary-btn {
+  background-color: transparent;
+  color: #4a3aff;
+  border: 1px solid #4a3aff;
+  font-weight: 600;
+}
+
+.secondary-btn:hover {
+    background-color: #f0f0ff;
+    border-color: #5848e5;
+    color: #5848e5;
+}
+
+.hero-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 5rem 5rem 10rem 5rem; /* Center hero content vertically in space */
+}
+
+.hero-left {
+  flex: 1;
+  max-width: 50%;
+  text-align: left;
+}
+
+.main-title {
+  font-size: 3.5rem;
+  font-weight: 800;
+  line-height: 1.1;
+  margin-bottom: 0.5rem;
+}
+
+.highlight-text {
+  color: #4a3aff;
+}
+
+.subtitle-text {
+  font-size: 1.15rem;
+  color: #555;
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+  line-height: 1.5;
+}
+
+.search-box {
+  display: flex;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 0.25rem;
+  width: 100%;
+  max-width: 450px;
+  background-color: white;
+}
+
+.search-box input {
+  flex-grow: 1;
+  border: none;
+  padding: 0.8rem;
+  margin: 0;
+  font-size: 1rem;
+}
+
+.search-box input:focus {
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.search-btn {
+  background-color: #4a3aff;
+  color: white;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  border: none;
+  cursor: pointer;
+  width: auto;
+  margin: 0.25rem;
+}
+
+.search-btn:hover {
+    background-color: #5848e5;
+}
+
+.hero-right {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+  max-width: 50%;
+  padding-left: 2rem;
+}
+
+.upload-card {
+  background: white;
+  padding: 2.5rem 2.5rem;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  max-width: 350px;
+  text-align: center;
+  border: 1px solid #eee;
+}
+
+.file-icon {
+    margin-bottom: 1rem;
+}
+
+.upload-prompt {
+  font-size: 1rem;
+  color: #555;
+  margin-bottom: 1.5rem;
+  line-height: 1.4;
+}
+
+.upload-btn {
+  background: #4a3aff;
+  color: white;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.8rem;
+  margin-top: 0;
+}
+
+.upload-btn:hover {
+    background: #5848e5;
+}
+
+.upload-icon {
+    margin-left: 0.5rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .hero-section {
+    flex-direction: column;
+    padding: 3rem 2rem 5rem 2rem;
+  }
+
+  .hero-left {
+    max-width: 100%;
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .hero-right {
+    max-width: 100%;
+    justify-content: center;
+  }
+  
+  .main-title {
+    font-size: 2.5rem;
+  }
+  
+  .search-box {
+    max-width: 100%;
+    justify-content: center;
+  }
+  
+  .header {
+    padding: 1rem 2rem;
+  }
+}
+
+@media (max-width: 600px) {
+    .header {
+        padding: 1rem;
+    }
+    .auth-buttons {
+        display: flex;
+    }
+    .auth-buttons button {
+        padding: 0.6em 1em;
+        font-size: 0.9em;
+    }
+}
+
+.upload-card {
+  /* ... existing styles ... */
+  background: white;
+  padding: 2.5rem 2.5rem;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  max-width: 350px;
+  text-align: center;
+  border: 1px solid #eee;
+}
+
+/* 👈 Add this new style to hide the file input */
+.hidden-file-input {
+  display: none;
+}
+
+.file-icon {
+  /* ... existing styles ... */
+  margin-bottom: 1rem;
 }
