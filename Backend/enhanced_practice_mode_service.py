@@ -328,12 +328,12 @@ Be detailed and educational in your feedback.
                 feedback_text = result['choices'][0]['message']['content']
                 
                 # Parse the feedback to extract scores
-                overall_score = self._extract_score(feedback_text, "OVERALL SCORE")
+                overall_score = self._extract_score(feedback_text, "OVERALL SCORE:")
                 letter_grade = self._extract_letter_grade(feedback_text)
-                s_score = self._extract_score(feedback_text, "S:")
-                m_score = self._extract_score(feedback_text, "M:")
-                a_score = self._extract_score(feedback_text, "A:")
-                p_score = self._extract_score(feedback_text, "P:")
+                s_score = self._extract_score(feedback_text, "- S:")
+                m_score = self._extract_score(feedback_text, "- M:")
+                a_score = self._extract_score(feedback_text, "- A:")
+                p_score = self._extract_score(feedback_text, "- P:")
                 
                 return {
                     "overall_score": overall_score,
@@ -360,14 +360,25 @@ Be detailed and educational in your feedback.
     def _extract_score(self, text: str, prefix: str) -> int:
         """Extract numeric score from feedback text"""
         try:
+            import re
             lines = text.split('\n')
             for line in lines:
                 if prefix in line:
-                    # Look for numbers in the line
-                    import re
-                    numbers = re.findall(r'\d+', line)
+                    # Look for patterns like "90/100" or "S: 90/100"
+                    # First try to find pattern with slash
+                    slash_match = re.search(r'(\d+)/100', line)
+                    if slash_match:
+                        return min(100, max(0, int(slash_match.group(1))))
+                    
+                    # Then try to find just numbers after the prefix
+                    after_prefix = line.split(prefix)[1] if prefix in line else line
+                    numbers = re.findall(r'\d+', after_prefix)
                     if numbers:
-                        return min(100, max(0, int(numbers[0])))
+                        score = int(numbers[0])
+                        # If score seems too high (like year 2025), try next number
+                        if score > 100 and len(numbers) > 1:
+                            score = int(numbers[1])
+                        return min(100, max(0, score))
         except:
             pass
         return 50  # Default score

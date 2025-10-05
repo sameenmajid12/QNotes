@@ -11,19 +11,23 @@ from datetime import datetime
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import urllib.parse
 import base64
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), '.env'))
 
 # Add current directory to path
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 # Import services
 try:
-    from working_elevenlabs_service import WorkingElevenLabsService
+    from elevenlabs_service import ElevenLabsService
     from convai_service import ConvAIService
     from enhanced_practice_mode_service import EnhancedPracticeModeService
-    ELEVENLABS_AVAILABLE = True
+    SERVICES_AVAILABLE = True
     print("✅ All services imported")
 except ImportError as e:
-    ELEVENLABS_AVAILABLE = False
+    SERVICES_AVAILABLE = False
     print(f"⚠️ Services not available: {e}")
 
 class WorkingBackendHandler(BaseHTTPRequestHandler):
@@ -31,9 +35,9 @@ class WorkingBackendHandler(BaseHTTPRequestHandler):
     
     def __init__(self, *args, **kwargs):
         # Initialize services
-        if ELEVENLABS_AVAILABLE:
+        if SERVICES_AVAILABLE:
             try:
-                self.elevenlabs_service = WorkingElevenLabsService()
+                self.elevenlabs_service = ElevenLabsService()
                 self.convai_service = ConvAIService()
                 self.practice_mode_service = EnhancedPracticeModeService()
                 print("✅ All services initialized")

@@ -2,12 +2,16 @@ import "./index.css";
 import LandingPage from "./components/LandingPage";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import AuthView from "./components/AuthView";
+import EnhancedAuthView from "./components/EnhancedAuthView";
 import useUser from "./hooks/useUser";
 import { useState } from "react";
 import Learn from "./components/Learn";
 import Practice from "./components/Practice";
 import EnhancedPractice from "./components/EnhancedPractice";
+import SimplePractice from "./components/SimplePractice";
 import VoiceAgent from "./components/VoiceAgent";
+import EnhancedVoiceAgent from "./components/EnhancedVoiceAgent";
+import SimpleVoiceAgent from "./components/SimpleVoiceAgent";
 import Sidebar from "./components/Sidebar";
 import Header from "./components/header";
 function App() {
@@ -17,7 +21,7 @@ function App() {
   if (authMode) {
     return (
       <div className="gradient-bg">
-        <AuthView
+        <EnhancedAuthView
           onLogin={(email, password) => handleAuth(false, email, password)}
           onSignup={(email, password) => handleAuth(true, email, password)}
           onToggleAuth={() =>
@@ -43,9 +47,12 @@ function App() {
               {file ? (
                 <Routes>
                   <Route path="/" element={<Learn />} />
-                  <Route path="/practice" element={<EnhancedPractice />} />
+                  <Route path="/practice" element={<SimplePractice />} />
+                  <Route path="/practice-enhanced" element={<EnhancedPractice />} />
                   <Route path="/practice-old" element={<Practice />} />
-                  <Route path="/agent" element={<VoiceAgent />} />
+                  <Route path="/agent" element={<SimpleVoiceAgent />} />
+                  <Route path="/agent-enhanced" element={<EnhancedVoiceAgent />} />
+                  <Route path="/agent-old" element={<VoiceAgent />} />
                 </Routes>
               ) : (
                 <NoFileScreen onSelectFile={setFile} />

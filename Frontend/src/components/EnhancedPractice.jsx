@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import '../styles/practice.css';
+import '../styles/enhanced-practice.css';
 
 const API_BASE_URL = 'http://localhost:8000';
 
@@ -29,7 +29,13 @@ function EnhancedPractice() {
   const loadSections = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${API_BASE_URL}/api/session/${sessionId}/practice/sections`);
+      const response = await fetch(`${API_BASE_URL}/api/session/${sessionId}/practice`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ action: 'get_sections' }),
+      });
       const data = await response.json();
       
       if (data.success) {
@@ -50,12 +56,12 @@ function EnhancedPractice() {
       setCurrentSection(section);
       
       // Get SMAP teaching for this section
-      const response = await fetch(`${API_BASE_URL}/api/session/${sessionId}/practice/teach`, {
+      const response = await fetch(`${API_BASE_URL}/api/session/${sessionId}/practice`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(section),
+        body: JSON.stringify({ action: 'teach_smap', section: section }),
       });
       
       const data = await response.json();
@@ -88,17 +94,15 @@ function EnhancedPractice() {
     try {
       setLoading(true);
       
-      const response = await fetch(`${API_BASE_URL}/api/session/${sessionId}/practice/submit`, {
+      const response = await fetch(`${API_BASE_URL}/api/session/${sessionId}/practice`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          session_id: sessionId,
-          subjective: smapAnswers.subjective,
-          metrics: smapAnswers.metrics,
-          assessment: smapAnswers.assessment,
-          plan: smapAnswers.plan
+          action: 'grade_submission',
+          student_submission: `SUBJECTIVE: ${smapAnswers.subjective}\n\nMETRICS: ${smapAnswers.metrics}\n\nASSESSMENT: ${smapAnswers.assessment}\n\nPLAN: ${smapAnswers.plan}`,
+          section_id: currentSection?.id || 'financial_statements'
         }),
       });
       
@@ -121,7 +125,13 @@ function EnhancedPractice() {
     try {
       setLoading(true);
       
-      const response = await fetch(`${API_BASE_URL}/api/session/${sessionId}/practice/insights`);
+      const response = await fetch(`${API_BASE_URL}/api/session/${sessionId}/practice`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ action: 'get_insights' }),
+      });
       const data = await response.json();
       
       if (data.success) {
