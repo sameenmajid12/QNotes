@@ -25,6 +25,9 @@
   font-weight: 700;
   color: var(--color-primary);
 }
+.logo{
+  width: 3.5rem;
+}
 .auth-buttons{
   display: flex;
   column-gap: 10px;
