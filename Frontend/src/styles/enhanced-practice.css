@@ -490,11 +490,74 @@
   color: #333;
 }
 
-.grading-actions {
+.feedback-actions {
   display: flex;
   gap: 1rem;
   justify-content: center;
-  flex-wrap: wrap;
+  margin-top: 2rem;
+}
+
+/* Demo Practice Specific Styles */
+.smap-info {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+  padding: 1rem;
+  background: #f8f9ff;
+  border-radius: 12px;
+  border: 1px solid #e0e0e0;
+}
+
+.smap-item {
+  text-align: center;
+  padding: 0.5rem;
+  background: white;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.btn {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  font-size: 1rem;
+}
+
+.btn-primary {
+  background: #4a3aff;
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #3a2ae5;
+  transform: translateY(-2px);
+}
+
+.btn-primary:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  background: white;
+  color: #4a3aff;
+  border: 2px solid #4a3aff;
+}
+
+.btn-secondary:hover {
+  background: #f8f9ff;
+}
+
+.btn-lg {
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
 }
 
 .insights-btn,

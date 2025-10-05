@@ -127,3 +127,23 @@ h1 {
   /* ... existing styles ... */
   margin-bottom: 1rem;
 }
+
+/* App Layout */
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+  background: var(--background-color);
+}
+
+.main-content {
+  flex: 1;
+  margin-left: 250px; /* Sidebar width */
+  background: #ffffff;
+  min-height: 100vh;
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 0;
+  }
+}

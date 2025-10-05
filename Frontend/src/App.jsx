@@ -14,65 +14,37 @@ import VoiceAgent from "./components/VoiceAgent";
 import EnhancedVoiceAgent from "./components/EnhancedVoiceAgent";
 import SimpleVoiceAgent from "./components/SimpleVoiceAgent";
 import Sidebar from "./components/Sidebar";
-import Header from "./components/header";
+import Header from "./components/Header";
+import WelcomeDashboard from "./components/WelcomeDashboard";
+
 function App() {
   const { user, handleAuth, handleLogout, loading } = useUser();
   const [authMode, setAuthMode] = useState(null);
-  const [file, setFile] = useState(null);
-  if (authMode) {
-    return (
-      <div className="gradient-bg">
-        <EnhancedAuthView
-          onLogin={(email, password) => handleAuth(false, email, password)}
-          onSignup={(email, password) => handleAuth(true, email, password)}
-          onToggleAuth={() =>
-            setAuthMode(authMode === "login" ? "signup" : "login")
-          }
-          showSignup={authMode === "signup"}
-        />
-      </div>
-    );
-  }
-  if (file) {
-    return (
-      <div>
-        <Header
-          onLoginClick={() => setAuthMode("login")}
-          onSignupClick={() => setAuthMode("signup")}
-          type={"dashboard"}
-        />
-        <Router>
-          <div className="app-layout">
-            <Sidebar handleLogout={handleLogout} />
-            <main className="main-content">
-              {file ? (
-                <Routes>
-                  <Route path="/" element={<EnhancedLearn />} />
-                  <Route path="/learn-old" element={<Learn />} />
-                  <Route path="/practice" element={<SimplePractice />} />
-                  <Route path="/practice-enhanced" element={<EnhancedPractice />} />
-                  <Route path="/practice-old" element={<Practice />} />
-                  <Route path="/agent" element={<SimpleVoiceAgent />} />
-                  <Route path="/agent-enhanced" element={<EnhancedVoiceAgent />} />
-                  <Route path="/agent-old" element={<VoiceAgent />} />
-                </Routes>
-              ) : (
-                <NoFileScreen onSelectFile={setFile} />
-              )}
-            </main>
-          </div>
-        </Router>
-      </div>
-    );
-  }
-
+  const [file, setFile] = useState({ name: "Apple_10Q_2024.pdf" }); // Auto-set file for demo
+  
+  // Skip auth for demo - go straight to dashboard
   return (
     <div>
       <Header
+        user={{ name: "Demo User" }}
         onLoginClick={() => setAuthMode("login")}
         onSignupClick={() => setAuthMode("signup")}
+        onLogout={() => {}}
+        type="dashboard"
       />
-      <LandingPage setFile={setFile}/>
+      <Router>
+        <div className="app-layout">
+          <Sidebar handleLogout={handleLogout} user={{ name: "Demo User" }} />
+          <main className="main-content">
+            <Routes>
+              <Route path="/" element={<EnhancedLearn file={file} />} />
+              <Route path="/learn" element={<EnhancedLearn file={file} />} />
+              <Route path="/practice" element={<EnhancedPractice file={file} />} />
+              <Route path="/agent" element={<EnhancedVoiceAgent file={file} />} />
+            </Routes>
+          </main>
+        </div>
+      </Router>
     </div>
   );
 }

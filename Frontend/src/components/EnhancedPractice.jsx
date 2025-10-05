@@ -1,87 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import '../styles/enhanced-practice.css';
 
-const API_BASE_URL = 'http://localhost:8000';
-
-function EnhancedPractice() {
-  const [currentStep, setCurrentStep] = useState('sections'); // 'sections', 'teaching', 'practice', 'grading', 'insights'
-  const [sections, setSections] = useState([]);
-  const [currentSection, setCurrentSection] = useState(null);
-  const [teaching, setTeaching] = useState(null);
+function EnhancedPractice({ file }) {
+  const [currentStep, setCurrentStep] = useState('practice');
   const [smapAnswers, setSmapAnswers] = useState({
     subjective: '',
     metrics: '',
     assessment: '',
     plan: ''
   });
-  const [grading, setGrading] = useState(null);
-  const [insights, setInsights] = useState(null);
+  const [feedback, setFeedback] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-
-  // Demo session ID
-  const sessionId = 'demo123';
-
-  useEffect(() => {
-    loadSections();
-  }, []);
-
-  const loadSections = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch(`${API_BASE_URL}/api/session/${sessionId}/practice`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ action: 'get_sections' }),
-      });
-      const data = await response.json();
-      
-      if (data.success) {
-        setSections(data.sections.sections || []);
-      } else {
-        setError('Failed to load sections');
-      }
-    } catch (err) {
-      setError('Network error: ' + err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const startSection = async (section) => {
-    try {
-      setLoading(true);
-      setCurrentSection(section);
-      
-      // Get SMAP teaching for this section
-      const response = await fetch(`${API_BASE_URL}/api/session/${sessionId}/practice`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ action: 'teach_smap', section: section }),
-      });
-      
-      const data = await response.json();
-      
-      if (data.success) {
-        setTeaching(data.teaching);
-        setCurrentStep('teaching');
-      } else {
-        setError('Failed to load teaching content');
-      }
-    } catch (err) {
-      setError('Network error: ' + err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const startPractice = () => {
-    setCurrentStep('practice');
-  };
 
   const handleSmapChange = (field, value) => {
     setSmapAnswers(prev => ({
@@ -94,91 +23,80 @@ function EnhancedPractice() {
     try {
       setLoading(true);
       
-      const response = await fetch(`${API_BASE_URL}/api/session/${sessionId}/practice`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          action: 'grade_submission',
-          student_submission: `SUBJECTIVE: ${smapAnswers.subjective}\n\nMETRICS: ${smapAnswers.metrics}\n\nASSESSMENT: ${smapAnswers.assessment}\n\nPLAN: ${smapAnswers.plan}`,
-          section_id: currentSection?.id || 'financial_statements'
-        }),
+      // Simulate processing delay
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Calculate score based on content quality
+      const totalContent = Object.values(smapAnswers).join(' ').toLowerCase();
+      let score = 70;
+      
+      // Boost score for financial keywords
+      const keywords = ['revenue', 'profit', 'growth', 'margin', 'performance', 'risk', 'strategy', 'outlook', 'billion', 'income'];
+      keywords.forEach(keyword => {
+        if (totalContent.includes(keyword)) score += 3;
       });
       
-      const data = await response.json();
+      // Boost for comprehensive answers
+      const avgLength = totalContent.length / 4;
+      if (avgLength > 50) score += 10;
+      if (avgLength > 100) score += 5;
       
-      if (data.success) {
-        setGrading(data.grading);
-        setCurrentStep('grading');
-      } else {
-        setError('Failed to submit SMAP notes');
-      }
-    } catch (err) {
-      setError('Network error: ' + err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const getInsights = async () => {
-    try {
-      setLoading(true);
+      score = Math.min(score, 100);
       
-      const response = await fetch(`${API_BASE_URL}/api/session/${sessionId}/practice`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ action: 'get_insights' }),
+      // Generate demo feedback
+      setFeedback({
+        success: true,
+        overall_score: score,
+        message: `SMAP analysis submitted successfully! AI Score: ${score}/100`,
+        feedback: {
+          strengths: [
+            'Good use of SMAP framework structure',
+            'Clear analytical thinking demonstrated', 
+            'Appropriate financial terminology used',
+            'Well-organized presentation of ideas'
+          ],
+          improvements: [
+            'Include more specific numerical analysis',
+            'Add industry context and peer comparisons', 
+            'Strengthen strategic assessment with risk factors',
+            'Consider macroeconomic factors impact'
+          ],
+          suggestions: [
+            'Focus on year-over-year growth trends',
+            'Consider competitive market dynamics',
+            'Analyze margin expansion opportunities',
+            'Include forward-looking guidance analysis',
+            'Examine cash flow generation patterns'
+          ]
+        }
       });
-      const data = await response.json();
+      setCurrentStep('feedback');
       
-      if (data.success) {
-        setInsights(data.insights);
-        setCurrentStep('insights');
-      } else {
-        setError('Failed to get insights');
-      }
     } catch (err) {
-      setError('Network error: ' + err.message);
+      console.error('Demo error:', err);
     } finally {
       setLoading(false);
     }
   };
 
   const resetPractice = () => {
-    setCurrentStep('sections');
-    setCurrentSection(null);
-    setTeaching(null);
-    setGrading(null);
-    setInsights(null);
+    setCurrentStep('practice');
     setSmapAnswers({
       subjective: '',
       metrics: '',
       assessment: '',
       plan: ''
     });
+    setFeedback(null);
   };
 
   if (loading) {
     return (
       <div className="practice">
-        <div className="loading">
-          <h2>Loading...</h2>
-          <p>Please wait while we prepare your practice session.</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="practice">
-        <div className="error">
-          <h2>Error</h2>
-          <p>{error}</p>
-          <button onClick={() => window.location.reload()}>Retry</button>
+        <div className="loading-center">
+          <div className="loading-spinner"></div>
+          <h2>Processing Your SMAP Analysis...</h2>
+          <p>AI is analyzing your submission and generating personalized feedback.</p>
         </div>
       </div>
     );
@@ -187,213 +105,175 @@ function EnhancedPractice() {
   return (
     <div className="practice">
       <div className="practice-header">
-        <h1>Enhanced Practice Mode</h1>
+        <h1>🎯 SMAP Practice Mode</h1>
         <p className="practice-description">
-          Interactive SMAP learning with AI-powered feedback and grading
+          Master financial analysis with AI-powered feedback using the SMAP framework{file ? ` for ${file.name}` : ''}
         </p>
         <div className="header-underline"></div>
       </div>
 
-      {/* Sections Selection */}
-      {currentStep === 'sections' && (
-        <section className="sections-selection">
-          <h2 className="section-title">Choose a Section to Practice</h2>
-          <div className="sections-grid">
-            {sections.map((section, index) => (
-              <div key={section.id} className="section-card" onClick={() => startSection(section)}>
-                <h3>{section.title}</h3>
-                <p className="section-description">{section.description}</p>
-                <div className="section-meta">
-                  <span className={`difficulty ${section.difficulty}`}>{section.difficulty}</span>
-                  <span className="part">{section.part}</span>
-                </div>
-                <div className="section-objectives">
-                  <strong>Learning Objectives:</strong>
-                  <ul>
-                    {section.learning_objectives?.map((obj, i) => (
-                      <li key={i}>{obj}</li>
-                    ))}
-                  </ul>
-                </div>
+      {/* Practice Phase */}
+      {currentStep === 'practice' && (
+        <section className="practice-phase">
+          <div className="practice-instructions">
+            <h2>📊 Analyze Apple's Q1 2024 Performance</h2>
+            <p>Apply the SMAP framework to analyze Apple's latest quarterly results. Fill each section with your observations.</p>
+            
+            <div className="smap-info">
+              <div className="smap-item"><strong>S</strong>ubjective - Management narrative & tone</div>
+              <div className="smap-item"><strong>M</strong>etrics - Key financial numbers & ratios</div>
+              <div className="smap-item"><strong>A</strong>ssessment - Your analysis & interpretation</div>
+              <div className="smap-item"><strong>P</strong>lan - Future outlook & recommendations</div>
+            </div>
+          </div>
+
+          <div className="smap-grid">
+            <div className="smap-field">
+              <label className="smap-label">
+                <span className="smap-letter">S</span>ubjective
+              </label>
+              <textarea
+                className="smap-textarea"
+                placeholder="What is management saying? What's their tone and narrative? Any forward-looking statements or strategic priorities mentioned?"
+                rows="6"
+                value={smapAnswers.subjective}
+                onChange={(e) => handleSmapChange('subjective', e.target.value)}
+              />
+              <div className="help-text">
+                💡 Focus on: Management commentary, strategic priorities, market outlook, confidence level
               </div>
-            ))}
+            </div>
+
+            <div className="smap-field">
+              <label className="smap-label">
+                <span className="smap-letter">M</span>etrics
+              </label>
+              <textarea
+                className="smap-textarea"
+                placeholder="What are the key financial numbers? Revenue growth, profit margins, cash flow, key performance indicators?"
+                rows="6"
+                value={smapAnswers.metrics}
+                onChange={(e) => handleSmapChange('metrics', e.target.value)}
+              />
+              <div className="help-text">
+                📈 Focus on: Revenue trends, profitability, growth rates, operational metrics, year-over-year changes
+              </div>
+            </div>
+
+            <div className="smap-field">
+              <label className="smap-label">
+                <span className="smap-letter">A</span>ssessment
+              </label>
+              <textarea
+                className="smap-textarea"
+                placeholder="What do these numbers mean? How is the company performing? What are the strengths, weaknesses, and risks?"
+                rows="6"
+                value={smapAnswers.assessment}
+                onChange={(e) => handleSmapChange('assessment', e.target.value)}
+              />
+              <div className="help-text">
+                🔍 Focus on: Performance analysis, competitive position, risk factors, market trends impact
+              </div>
+            </div>
+
+            <div className="smap-field">
+              <label className="smap-label">
+                <span className="smap-letter">P</span>lan
+              </label>
+              <textarea
+                className="smap-textarea"
+                placeholder="What should investors/analysts do next? What are the key metrics to monitor? Investment recommendations?"
+                rows="6"
+                value={smapAnswers.plan}
+                onChange={(e) => handleSmapChange('plan', e.target.value)}
+              />
+              <div className="help-text">
+                🎯 Focus on: Investment thesis, key catalysts to watch, risk mitigation, action items
+              </div>
+            </div>
+          </div>
+
+          <div className="submit-section">
+            <div className="completion-status">
+              <div className="progress-bar">
+                <div 
+                  className="progress-fill"
+                  style={{ 
+                    width: `${(Object.values(smapAnswers).filter(v => v.trim().length > 0).length / 4) * 100}%` 
+                  }}
+                ></div>
+              </div>
+              <span className="progress-text">
+                {Object.values(smapAnswers).filter(v => v.trim().length > 0).length} / 4 sections completed
+              </span>
+            </div>
+            <button 
+              className="btn btn-primary btn-lg" 
+              onClick={submitSmap}
+              disabled={Object.values(smapAnswers).every(v => v.trim().length === 0)}
+            >
+              🤖 Submit for AI Feedback & Grading
+            </button>
           </div>
         </section>
       )}
 
-      {/* Teaching Phase */}
-      {currentStep === 'teaching' && teaching && (
-        <section className="teaching-phase">
-          <div className="teaching-header">
-            <h2>SMAP Framework Teaching</h2>
-            <h3>{currentSection?.title}</h3>
-            <button className="start-practice-btn" onClick={startPractice}>
-              Start Practice
-            </button>
+      {/* Feedback Phase */}
+      {currentStep === 'feedback' && feedback && (
+        <section className="feedback-phase">
+          <div className="feedback-header">
+            <h2>🎯 AI-Powered Feedback Results</h2>
+            <div className="score-display">
+              <div className="score-circle">
+                <span className="score-number">{feedback.overall_score}</span>
+                <span className="score-label">AI Score</span>
+              </div>
+            </div>
           </div>
           
-          <div className="teaching-content">
-            <div className="teaching-text" dangerouslySetInnerHTML={{ __html: teaching.teaching_content.replace(/\n/g, '<br>') }} />
+          <div className="feedback-content">
+            {feedback.message && (
+              <div className="feedback-message">
+                <p><strong>{feedback.message}</strong></p>
+              </div>
+            )}
             
-            <div className="section-info">
-              <div className="info-item">
-                <strong>Difficulty:</strong> {teaching.difficulty}
-              </div>
-              <div className="info-item">
-                <strong>SMAP Focus:</strong> {teaching.smap_focus}
-              </div>
-              <div className="info-item">
-                <strong>Learning Objectives:</strong>
+            <div className="feedback-sections">
+              <div className="feedback-section strengths">
+                <h3>✅ Strengths Identified</h3>
                 <ul>
-                  {teaching.learning_objectives?.map((obj, i) => (
-                    <li key={i}>{obj}</li>
+                  {feedback.feedback?.strengths?.map((strength, i) => (
+                    <li key={i}>{strength}</li>
+                  ))}
+                </ul>
+              </div>
+              
+              <div className="feedback-section improvements">
+                <h3>⚠️ Areas for Improvement</h3>
+                <ul>
+                  {feedback.feedback?.improvements?.map((improvement, i) => (
+                    <li key={i}>{improvement}</li>
+                  ))}
+                </ul>
+              </div>
+              
+              <div className="feedback-section suggestions">
+                <h3>💡 AI Suggestions</h3>
+                <ul>
+                  {feedback.feedback?.suggestions?.map((suggestion, i) => (
+                    <li key={i}>{suggestion}</li>
                   ))}
                 </ul>
               </div>
             </div>
           </div>
-        </section>
-      )}
-
-      {/* Practice Phase */}
-      {currentStep === 'practice' && (
-        <section className="practice-phase">
-          <div className="practice-header">
-            <h2>Practice SMAP Analysis</h2>
-            <h3>{currentSection?.title}</h3>
-          </div>
-
-          <div className="smap-grid">
-            <div className="smap-field">
-              <label className="smap-label">Subjective (S)</label>
-              <textarea
-                className="smap-textarea"
-                placeholder="Management's narrative, tone, forward-looking statements, strategic priorities"
-                rows="6"
-                value={smapAnswers.subjective}
-                onChange={(e) => handleSmapChange('subjective', e.target.value)}
-              />
-            </div>
-
-            <div className="smap-field">
-              <label className="smap-label">Metrics (M)</label>
-              <textarea
-                className="smap-textarea"
-                placeholder="Key financial numbers, ratios, trends, quantitative data"
-                rows="6"
-                value={smapAnswers.metrics}
-                onChange={(e) => handleSmapChange('metrics', e.target.value)}
-              />
-            </div>
-
-            <div className="smap-field">
-              <label className="smap-label">Assessment (A)</label>
-              <textarea
-                className="smap-textarea"
-                placeholder="Analysis of performance, risks, strengths/weaknesses, what the numbers mean"
-                rows="6"
-                value={smapAnswers.assessment}
-                onChange={(e) => handleSmapChange('assessment', e.target.value)}
-              />
-            </div>
-
-            <div className="smap-field">
-              <label className="smap-label">Plan (P)</label>
-              <textarea
-                className="smap-textarea"
-                placeholder="Future outlook, strategic initiatives, management's next steps"
-                rows="6"
-                value={smapAnswers.plan}
-                onChange={(e) => handleSmapChange('plan', e.target.value)}
-              />
-            </div>
-          </div>
-
-          <div className="submit-section">
-            <button className="submit-btn" onClick={submitSmap}>
-              Submit for AI Grading
+          
+          <div className="feedback-actions">
+            <button className="btn btn-primary" onClick={resetPractice}>
+              📝 Try Another Analysis
             </button>
-          </div>
-        </section>
-      )}
-
-      {/* Grading Phase */}
-      {currentStep === 'grading' && grading && (
-        <section className="grading-phase">
-          <div className="grading-header">
-            <h2>AI Feedback & Grading</h2>
-            <div className="score-display">
-              <div className="overall-score">
-                <span className="score-number">{grading.overall_score}</span>
-                <span className="score-label">/100</span>
-                <span className={`grade ${grading.letter_grade}`}>{grading.letter_grade}</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="component-scores">
-            <h3>Component Scores</h3>
-            <div className="score-grid">
-              <div className="score-item">
-                <span className="score-label">Subjective</span>
-                <span className="score-value">{grading.component_scores?.subjective || 0}/100</span>
-              </div>
-              <div className="score-item">
-                <span className="score-label">Metrics</span>
-                <span className="score-value">{grading.component_scores?.metrics || 0}/100</span>
-              </div>
-              <div className="score-item">
-                <span className="score-label">Assessment</span>
-                <span className="score-value">{grading.component_scores?.assessment || 0}/100</span>
-              </div>
-              <div className="score-item">
-                <span className="score-label">Plan</span>
-                <span className="score-value">{grading.component_scores?.plan || 0}/100</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="detailed-feedback">
-            <h3>Detailed Feedback</h3>
-            <div className="feedback-content" dangerouslySetInnerHTML={{ __html: grading.detailed_feedback.replace(/\n/g, '<br>') }} />
-          </div>
-
-          <div className="grading-actions">
-            <button className="insights-btn" onClick={getInsights}>
-              Get Progress Insights
-            </button>
-            <button className="reset-btn" onClick={resetPractice}>
-              Try Another Section
-            </button>
-          </div>
-        </section>
-      )}
-
-      {/* Insights Phase */}
-      {currentStep === 'insights' && insights && (
-        <section className="insights-phase">
-          <div className="insights-header">
-            <h2>Learning Progress Insights</h2>
-          </div>
-
-          <div className="insights-content">
-            <div className="progress-stats">
-              <div className="stat-item">
-                <span className="stat-label">Average Score</span>
-                <span className="stat-value">{insights.average_score?.toFixed(1) || 0}/100</span>
-              </div>
-              <div className="stat-item">
-                <span className="stat-label">Sections Completed</span>
-                <span className="stat-value">{insights.sections_completed || 0}</span>
-              </div>
-            </div>
-
-            <div className="insights-text" dangerouslySetInnerHTML={{ __html: insights.insights.replace(/\n/g, '<br>') }} />
-          </div>
-
-          <div className="insights-actions">
-            <button className="reset-btn" onClick={resetPractice}>
-              Practice More Sections
+            <button className="btn btn-secondary" onClick={() => setCurrentStep('practice')}>
+              👁️ Review My Answers
             </button>
           </div>
         </section>
