@@ -39,6 +39,17 @@ class FeedbackScore:
     feedback_comments: List[str]
     suggestions: List[str]
 
+@dataclass
+class QuizQuestion:
+    """Structure to hold quiz question data"""
+    question: str
+    question_type: str  # "mcq" or "true_false"
+    options: Optional[List[str]] = None  # For MCQ only
+    correct_answer: str = ""
+    explanation: str = ""
+    category: str = ""  # Which SMAP section it relates to
+    difficulty: str = "Medium"
+
 class GeminiService:
     """Main service class for Gemini API interactions"""
     
@@ -314,6 +325,126 @@ class GeminiService:
         except Exception as e:
             print(f"Error generating flashcards: {e}")
             return [{"question": "Error generating flashcard", "answer": "Please try again", "category": "Error", "difficulty": "N/A"}]
+
+    def generate_quiz(self, smap_notes: SMAPNotes, num_mcq: int = 7, num_tf: int = 3) -> List[QuizQuestion]:
+        """Generate a quiz with MCQ and True/False questions from SMAP notes"""
+        
+        prompt = f"""
+        Create an educational quiz based on these SMAP notes for {smap_notes.company_name}.
+        
+        SMAP Notes:
+        Subjective: {smap_notes.subjective}
+        Metrics: {smap_notes.metrics}
+        Assessment: {smap_notes.assessment}
+        Plan: {smap_notes.plan}
+        
+        Generate exactly {num_mcq} multiple choice questions and {num_tf} true/false questions.
+        
+        For MCQ questions:
+        - Provide 4 options (A, B, C, D)
+        - Test understanding of financial concepts, metrics, and analysis
+        - Mix difficulty levels (Easy, Medium, Hard)
+        
+        For True/False questions:
+        - Create statements that test comprehension
+        - Include explanations for why the answer is true or false
+        
+        Return as JSON array with this structure:
+        [
+            {{
+                "question": "What was the company's revenue growth rate?",
+                "question_type": "mcq",
+                "options": ["5%", "10%", "15%", "20%"],
+                "correct_answer": "B",
+                "explanation": "The company reported 10% YoY revenue growth in the filing.",
+                "category": "Metrics",
+                "difficulty": "Easy"
+            }},
+            {{
+                "question": "The company's debt-to-equity ratio decreased during the quarter.",
+                "question_type": "true_false",
+                "options": null,
+                "correct_answer": "True",
+                "explanation": "The ratio dropped from 1.5x to 1.2x, indicating improved financial leverage.",
+                "category": "Assessment",
+                "difficulty": "Medium"
+            }}
+        ]
+        
+        Make sure to generate exactly {num_mcq} MCQ questions first, followed by {num_tf} True/False questions.
+        Return ONLY valid JSON, no additional text.
+        """
+        
+        try:
+            response = self.model.generate_content(prompt)
+            # Clean response text to extract JSON
+            response_text = response.text.strip()
+            if response_text.startswith('```json'):
+                response_text = response_text[7:-3].strip()
+            elif response_text.startswith('```'):
+                response_text = response_text[3:-3].strip()
+            
+            quiz_data = json.loads(response_text)
+            
+            # Convert to QuizQuestion objects
+            quiz_questions = []
+            for q in quiz_data:
+                quiz_questions.append(QuizQuestion(
+                    question=q.get('question', ''),
+                    question_type=q.get('question_type', 'mcq'),
+                    options=q.get('options'),
+                    correct_answer=q.get('correct_answer', ''),
+                    explanation=q.get('explanation', ''),
+                    category=q.get('category', 'General'),
+                    difficulty=q.get('difficulty', 'Medium')
+                ))
+            
+            return quiz_questions
+            
+        except Exception as e:
+            print(f"Error generating quiz: {e}")
+            # Return a default error question
+            return [QuizQuestion(
+                question="Error generating quiz",
+                question_type="mcq",
+                options=["Please try again", "Error occurred", "Check logs", "Retry"],
+                correct_answer="A",
+                explanation="An error occurred while generating the quiz.",
+                category="Error",
+                difficulty="N/A"
+            )]
+            
+    def grade_quiz(self, quiz_questions: List[QuizQuestion], user_answers: Dict[int, str]) -> Dict:
+        """Grade the user's quiz answers and provide feedback"""
+        
+        total_questions = len(quiz_questions)
+        correct_answers = 0
+        feedback = []
+        
+        for idx, question in enumerate(quiz_questions):
+            user_answer = user_answers.get(idx, "")
+            is_correct = user_answer.upper() == question.correct_answer.upper()
+            
+            if is_correct:
+                correct_answers += 1
+            
+            feedback.append({
+                "question_number": idx + 1,
+                "correct": is_correct,
+                "user_answer": user_answer,
+                "correct_answer": question.correct_answer,
+                "explanation": question.explanation
+            })
+        
+        score_percentage = (correct_answers / total_questions) * 100 if total_questions > 0 else 0
+        
+        return {
+            "total_questions": total_questions,
+            "correct_answers": correct_answers,
+            "score_percentage": round(score_percentage, 2),
+            "feedback": feedback,
+            "passing": score_percentage >= 70
+        }
 
 # Test function
 def test_gemini_service():

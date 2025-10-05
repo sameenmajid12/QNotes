@@ -4,17 +4,16 @@ import "./index.css";
 
 // Separate component for the main landing page content
 function LandingPage({ onLoginClick, onSignupClick }) {
-  const [searchQuery, setSearchQuery] = useState("");
-  // 👈 1. Create a ref for the file input
-  const fileInputRef = useRef(null); 
+  const fileInputRef = useRef(null);
+  
+  // SEC Search states
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchType, setSearchType] = useState('cik'); // 'name' or 'cik'
+  const [results, setResults] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [searched, setSearched] = useState(false);
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    console.log("Searching for:", searchQuery);
-    // Add logic for search here
-  };
-
-  // 👈 2. Function to trigger the hidden file input
   const handleUploadButtonClick = () => {
     fileInputRef.current.click();
   };
@@ -26,6 +25,112 @@ function LandingPage({ onLoginClick, onSignupClick }) {
       console.log("Selected file:", file.name);
       alert(`File selected: ${file.name}. Ready to upload!`);
       // Add actual file upload logic here
+    }
+  };
+
+  const searchCompany = async () => {
+    if (!searchTerm.trim()) {
+      setError('Please enter a company name, ticker, or CIK');
+      return;
+    }
+
+    setLoading(true);
+    setError('');
+    setResults([]);
+    setSearched(true);
+
+    try {
+      // If searching by CIK, directly create the result
+      if (searchType === 'cik') {
+        const cikNumber = searchTerm.replace(/\D/g, ''); // Remove non-digits
+        
+        if (!cikNumber) {
+          setError('Please enter a valid CIK number');
+          setLoading(false);
+          return;
+        }
+
+        const cikPadded = cikNumber.padStart(10, '0');
+        
+        // Fetch company info to verify CIK exists
+        try {
+          const response = await fetch(
+            `https://data.sec.gov/submissions/CIK${cikPadded}.json`,
+            {
+              headers: {
+                'User-Agent': 'Company Search Tool'
+              }
+            }
+          );
+
+          if (!response.ok) {
+            throw new Error('CIK not found');
+          }
+
+          const companyInfo = await response.json();
+          
+          setResults([{
+            title: companyInfo.name,
+            ticker: companyInfo.tickers?.[0] || 'N/A',
+            cik_str: parseInt(cikNumber),
+            cik_padded: cikPadded,
+            edgarUrl: `https://www.sec.gov/edgar/browse/?CIK=${cikPadded}&owner=exclude`
+          }]);
+        } catch (err) {
+          setError('CIK number not found in SEC database');
+        }
+        
+        setLoading(false);
+        return;
+      }
+
+      // Search by name/ticker
+      const response = await fetch(
+        'https://www.sec.gov/files/company_tickers.json',
+        {
+          headers: {
+            'User-Agent': 'Company Search Tool'
+          }
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch company data');
+      }
+
+      const data = await response.json();
+      
+      // Convert to array and search
+      const companies = Object.values(data);
+      const searchLower = searchTerm.toLowerCase();
+      
+      const matches = companies.filter(company => 
+        company.title.toLowerCase().includes(searchLower) ||
+        company.ticker?.toLowerCase().includes(searchLower)
+      );
+
+      if (matches.length === 0) {
+        setError('No companies found matching your search');
+      } else {
+        // Add padded CIK to results
+        const formattedResults = matches.map(company => ({
+          ...company,
+          cik_padded: String(company.cik_str).padStart(10, '0'),
+          edgarUrl: `https://www.sec.gov/edgar/browse/?CIK=${String(company.cik_str).padStart(10, '0')}&owner=exclude`
+        }));
+        setResults(formattedResults);
+      }
+    } catch (err) {
+      setError('Error fetching data from SEC. Please try again.');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      searchCompany();
     }
   };
 
@@ -51,25 +156,70 @@ function LandingPage({ onLoginClick, onSignupClick }) {
           </h1>
           <p className="subtitle-text">
             Search for a company or upload a 10-Q file, and we'll turn it into simple
-            summaries, charts, and explanations you can understand — with definitions
+            summaries, charts, and explanations you can understand with definitions
             for any financial terms you don't know.
           </p>
-          <form className="search-box" onSubmit={handleSearch}>
-            <input
-              type="text"
-              placeholder="Search company (eg. Apple, Google...)"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              required
-            />
-            <button type="submit" className="search-btn">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-search">
-                <circle cx="11" cy="11" r="8"></circle>
-                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-              </svg>
-            </button>
-          </form>
+          <div className="p-6 max-w-3xl mx-auto">
+
+      <div className="flex gap-2 mb-4">
+        <input
+          type="text"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          onKeyPress={handleKeyPress}
+          placeholder={
+            searchType === 'name'
+              ? 'Enter company name or ticker'
+              : 'Enter CIK number'
+          }
+          className="flex-1 px-3 py-2 border border-gray-300 rounded"
+        />
+        <button
+          onClick={searchCompany}
+          disabled={loading}
+          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-gray-400"
+        >
+          {loading ? 'Searching...' : 'Search'}
+        </button>
+      </div>
+
+      {error && (
+        <div className="mb-4 p-3 bg-red-100 border border-red-300 rounded text-red-700">
+          {error}
         </div>
+      )}
+
+      {searched && !loading && results.length > 0 && (
+        <div>
+          <p className="mb-3 font-semibold">
+            Found {results.length} {results.length === 1 ? 'company' : 'companies'}
+          </p>
+          
+          {results.map((company, idx) => (
+            <div key={idx} className="mb-3 p-4 border border-gray-300 rounded">
+              <div className="mb-2">
+                <div className="font-bold">{company.title}</div>
+                <div className="text-sm text-gray-600">
+                  Ticker: {company.ticker || 'N/A'} | CIK: {company.cik_padded}
+                </div>
+              </div>
+              
+              <a
+                href={company.edgarUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
+              >
+                View SEC Filings →
+              </a>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+        </div>
+
+        
 
         {/* Right Column: Upload Card */}
         <div className="hero-right">
