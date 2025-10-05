@@ -6,6 +6,7 @@ import useUser from "./hooks/useUser";
 import { useState } from "react";
 import Learn from "./components/Learn";
 import Practice from "./components/Practice";
+import EnhancedPractice from "./components/EnhancedPractice";
 import VoiceAgent from "./components/VoiceAgent";
 import Sidebar from "./components/Sidebar";
 import Header from "./components/header";
@@ -42,7 +43,8 @@ function App() {
               {file ? (
                 <Routes>
                   <Route path="/" element={<Learn />} />
-                  <Route path="/practice" element={<Practice />} />
+                  <Route path="/practice" element={<EnhancedPractice />} />
+                  <Route path="/practice-old" element={<Practice />} />
                   <Route path="/agent" element={<VoiceAgent />} />
                 </Routes>
               ) : (
