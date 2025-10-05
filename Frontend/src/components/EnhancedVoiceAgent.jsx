@@ -5,17 +5,18 @@ function EnhancedVoiceAgent({ file }) {
   const [isActive, setIsActive] = useState(false);
   const [currentDemo, setCurrentDemo] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [isDemoMode, setIsDemoMode] = useState(true);
 
   // Demo agent data
   const agentData = {
     status: 'Active',
-    type: 'financial_advisor',
+    type: 'AI Financial Advisor',
     capabilities: [
-      'Financial Analysis',
-      'Earnings Call Simulation', 
-      'Investment Advice',
-      'Market Commentary',
-      'Q&A Session'
+      '📊 Real-time Financial Analysis',
+      '🎙️ Earnings Call Simulation', 
+      '💡 Intelligent Investment Advice',
+      '📈 Market Commentary & Trends',
+      '❓ Interactive Q&A Sessions'
     ]
   };
 
@@ -48,9 +49,11 @@ function EnhancedVoiceAgent({ file }) {
   return (
     <div className="voice-agent-container">
       <div className="voice-agent-header">
-        <h1>🎤 AI Voice Agent</h1>
+        <div className="header-icon">🎤</div>
+        <h1>AI Voice Financial Advisor</h1>
         <p className="voice-agent-description">
-          Interactive financial advisor with voice synthesis {file ? `analyzing ${file.name}` : ''}
+          Experience intelligent financial conversations with advanced AI voice synthesis
+          {file ? ` • Currently analyzing: ${file.name}` : ''}
         </p>
         <div className="header-underline"></div>
       </div>
@@ -58,108 +61,132 @@ function EnhancedVoiceAgent({ file }) {
       {isActive && (
         <div className="voice-agent-content">
           <div className="agent-info">
-            <h2>🤖 Financial Advisor Agent</h2>
-            <div className="agent-details">
-              <div className="agent-status">
+            <div className="agent-status-bar">
+              <div className="status-item">
                 <span className="status-indicator active"></span>
-                <span>Status: {agentData.status}</span>
+                <span className="status-text">{agentData.status}</span>
               </div>
               <div className="agent-type">
-                <strong>Type:</strong> {agentData.type.replace('_', ' ').toUpperCase()}
+                <span className="type-label">Agent Type:</span>
+                <span className="type-value">{agentData.type}</span>
               </div>
-              <div className="agent-capabilities">
-                <strong>Capabilities:</strong>
-                <ul>
-                  {agentData.capabilities.map((capability, index) => (
-                    <li key={index}>{capability}</li>
-                  ))}
-                </ul>
+            </div>
+            
+            <div className="capabilities-section">
+              <h3 className="capabilities-title">🧠 AI Capabilities</h3>
+              <div className="capabilities-grid">
+                {agentData.capabilities.map((capability, index) => (
+                  <div key={index} className="capability-item">
+                    {capability}
+                  </div>
+                ))}
               </div>
             </div>
           </div>
 
           <div className="voice-features">
-            <h3>🎙️ Voice Features Demo</h3>
+            <h3 className="section-title">🎙️ Interactive Voice Demos</h3>
+            <p className="section-subtitle">Click any demo below to hear the AI voice in action</p>
+            
             <div className="feature-grid">
               <div className="feature-card">
-                <h4>📊 Earnings Call Simulation</h4>
-                <p>Experience realistic earnings call conversations with management tone</p>
+                <div className="feature-icon">📊</div>
+                <h4>Earnings Call Simulation</h4>
+                <p>Experience realistic executive presentations with professional tone and delivery</p>
                 <button 
-                  onClick={() => handleVoiceDemo('earnings', "Welcome to Apple's Q1 2024 earnings call. We're pleased to report strong performance with revenue of 119.6 billion dollars, up 2 percent year over year.")}
-                  className={`feature-btn ${currentDemo === 'earnings' ? 'active' : ''}`}
-                  disabled={loading}
+                  onClick={() => handleVoiceDemo('earnings', "Welcome to Apple's Q1 2024 earnings call. We're pleased to report strong performance with revenue of 119.6 billion dollars, representing 2 percent year-over-year growth.")}
+                  className={`feature-btn ${currentDemo === 'earnings' && loading ? 'speaking' : ''}`}
+                  disabled={loading && currentDemo !== 'earnings'}
                 >
-                  {currentDemo === 'earnings' && loading ? '🎙️ Speaking...' : '▶️ Play Demo'}
+                  {currentDemo === 'earnings' && loading ? (
+                    <>🔊 Speaking...</>
+                  ) : (
+                    <>▶️ Play Earnings Call</>
+                  )}
                 </button>
               </div>
               
               <div className="feature-card">
-                <h4>💹 Financial Analysis</h4>
-                <p>Get detailed explanations of financial metrics and ratios</p>
+                <div className="feature-icon">💹</div>
+                <h4>Financial Analysis</h4>
+                <p>Get detailed explanations of key metrics, ratios, and performance indicators</p>
                 <button 
-                  onClick={() => handleVoiceDemo('analysis', "Let me explain the key financial ratios. The gross margin improved to 46.6 percent, indicating strong operational efficiency and favorable product mix.")}
-                  className={`feature-btn ${currentDemo === 'analysis' ? 'active' : ''}`}
-                  disabled={loading}
+                  onClick={() => handleVoiceDemo('analysis', "Let me break down the key financial metrics. The gross margin improved to 46.6 percent, indicating strong operational efficiency and favorable product mix across all segments.")}
+                  className={`feature-btn ${currentDemo === 'analysis' && loading ? 'speaking' : ''}`}
+                  disabled={loading && currentDemo !== 'analysis'}
                 >
-                  {currentDemo === 'analysis' && loading ? '🎙️ Speaking...' : '📈 Analyze Metrics'}
+                  {currentDemo === 'analysis' && loading ? (
+                    <>🔊 Analyzing...</>
+                  ) : (
+                    <>📈 Analyze Metrics</>
+                  )}
                 </button>
               </div>
               
               <div className="feature-card">
-                <h4>💡 Investment Insights</h4>
-                <p>Receive AI-powered investment recommendations and market outlook</p>
+                <div className="feature-icon">💡</div>
+                <h4>Investment Insights</h4>
+                <p>Receive AI-powered recommendations and strategic market outlook analysis</p>
                 <button 
-                  onClick={() => handleVoiceDemo('advice', "Based on current performance metrics and market conditions, Apple shows strong fundamentals with resilient iPhone sales and growing services revenue.")}
-                  className={`feature-btn ${currentDemo === 'advice' ? 'active' : ''}`}
-                  disabled={loading}
+                  onClick={() => handleVoiceDemo('advice', "Based on comprehensive analysis of current performance metrics and market conditions, Apple demonstrates strong fundamentals with resilient iPhone sales and accelerating services growth.")}
+                  className={`feature-btn ${currentDemo === 'advice' && loading ? 'speaking' : ''}`}
+                  disabled={loading && currentDemo !== 'advice'}
                 >
-                  {currentDemo === 'advice' && loading ? '🎙️ Speaking...' : '💰 Get Advice'}
+                  {currentDemo === 'advice' && loading ? (
+                    <>🔊 Advising...</>
+                  ) : (
+                    <>💰 Investment Advice</>
+                  )}
                 </button>
               </div>
               
               <div className="feature-card">
-                <h4>🌍 Market Commentary</h4>
-                <p>Discuss market trends, sector performance, and economic indicators</p>
+                <div className="feature-icon">🌍</div>
+                <h4>Market Commentary</h4>
+                <p>Explore market trends, sector performance, and macroeconomic indicators</p>
                 <button 
-                  onClick={() => handleVoiceDemo('market', "Current market trends show technology sector resilience. Despite macroeconomic headwinds, companies with strong ecosystems continue to outperform.")}
-                  className={`feature-btn ${currentDemo === 'market' ? 'active' : ''}`}
-                  disabled={loading}
+                  onClick={() => handleVoiceDemo('market', "Current market dynamics reveal technology sector resilience. Despite macroeconomic headwinds, companies with strong ecosystem moats continue to demonstrate superior performance.")}
+                  className={`feature-btn ${currentDemo === 'market' && loading ? 'speaking' : ''}`}
+                  disabled={loading && currentDemo !== 'market'}
                 >
-                  {currentDemo === 'market' && loading ? '🎙️ Speaking...' : '📊 Market Update'}
+                  {currentDemo === 'market' && loading ? (
+                    <>🔊 Commenting...</>
+                  ) : (
+                    <>📀 Market Update</>
+                  )}
                 </button>
               </div>
-            </div>
-          </div>
-
-          <div className="demo-info">
-            <div className="info-card">
-              <h3>🎯 Demo Features</h3>
-              <ul>
-                <li>✅ <strong>Voice Synthesis:</strong> Browser-based text-to-speech</li>
-                <li>✅ <strong>Financial Content:</strong> Real earnings data and analysis</li>
-                <li>✅ <strong>Interactive UI:</strong> Click any demo button to hear AI voice</li>
-                <li>🔄 <strong>ElevenLabs Ready:</strong> Can integrate with professional voice models</li>
-              </ul>
             </div>
           </div>
 
           <div className="voice-controls">
-            <h3>🎛️ Voice Controls</h3>
-            <div className="controls-row">
-              <button 
-                onClick={() => speechSynthesis.cancel()}
-                className="control-btn stop-btn"
-                disabled={!loading}
-              >
-                ⏹️ Stop Voice
-              </button>
-              <button 
-                onClick={() => handleVoiceDemo('demo', "This is a demonstration of the AI voice agent for financial analysis and investment insights.")}
-                className="control-btn demo-btn"
-                disabled={loading}
-              >
-                🎤 Test Voice
-              </button>
+            <h3 className="section-title">🎛️ Voice Controls</h3>
+            <div className="controls-section">
+              <div className="control-item">
+                <button 
+                  onClick={() => speechSynthesis.cancel()}
+                  className="control-btn stop-btn"
+                  disabled={!loading}
+                  title="Stop current voice playback"
+                >
+                  ⏹️ Stop Audio
+                </button>
+              </div>
+              
+              <div className="control-item">
+                <button 
+                  onClick={() => handleVoiceDemo('demo', "Welcome to QNotes AI Voice Agent. This advanced financial advisor uses cutting-edge voice synthesis to provide intelligent market analysis and investment insights.")}
+                  className="control-btn test-btn"
+                  disabled={loading}
+                  title="Test the voice synthesis system"
+                >
+                  {currentDemo === 'demo' && loading ? (
+                    <>🔊 Testing...</>
+                  ) : (
+                    <>🎤 Test Voice System</>
+                  )}
+                </button>
+              </div>
             </div>
           </div>
 

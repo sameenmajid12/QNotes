@@ -155,24 +155,33 @@ Score: ${Math.round((correctAnswers / totalQuestions) * 100)}%`);
   return (
     <div className="enhanced-learn">
       <div className="learn-header">
-        <div className="company-info">
-          <h1>{companyData.name}</h1>
-          <p className="company-subtitle">
-            {companyData.ticker} • {companyData.quarter} • Enhanced Learning Mode
-          </p>
+        <div className="header-main">
+          <div className="company-badge">
+            <span className="ticker">{companyData.ticker}</span>
+            <span className="quarter">{companyData.quarter}</span>
+          </div>
+          <div className="company-info">
+            <h1>{companyData.name}</h1>
+            <p className="company-subtitle">
+              Financial Analysis & Learning Platform
+            </p>
+          </div>
         </div>
+        
         <div className="tab-navigation">
           <button 
             className={`tab-button ${activeTab === 'summary' ? 'active' : ''}`}
             onClick={() => setActiveTab('summary')}
           >
-            📊 Summary
+            <span className="tab-icon">📊</span>
+            <span>Summary</span>
           </button>
           <button 
             className={`tab-button ${activeTab === 'quiz' ? 'active' : ''}`}
             onClick={() => setActiveTab('quiz')}
           >
-            🧠 Quiz
+            <span className="tab-icon">🧠</span>
+            <span>Knowledge Quiz</span>
           </button>
         </div>
       </div>
