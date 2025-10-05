@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>10Q Notes AI - Test Frontend</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2563eb;
+            text-align: center;
+        }
+        .section {
+            margin: 20px 0;
+        }
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #374151;
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+            padding: 10px;
+            border: 2px solid #e5e7eb;
+            border-radius: 5px;
+            font-family: Arial, sans-serif;
+        }
+        button {
+            background: #2563eb;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+        }
+        button:hover {
+            background: #1d4ed8;
+        }
+        .status {
+            margin: 20px 0;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔹 10Q Notes AI - Test Frontend</h1>
+        <p><strong>Test the REAL AI Feedback System</strong></p>
+        
+        <div class="section">
+            <label for="subjective">S – Subjective (What Management Said)</label>
+            <textarea id="subjective" placeholder="Describe management's tone, strategic priorities, and forward-looking statements..."></textarea>
+        </div>
+        
+        <div class="section">
+            <label for="metrics">M – Metrics (Key Financial Numbers)</label>
+            <textarea id="metrics" placeholder="Include specific revenue, profit, ratios, and financial data..."></textarea>
+        </div>
+        
+        <div class="section">
+            <label for="assessment">A – Assessment (What It All Means)</label>
+            <textarea id="assessment" placeholder="Analyze the numbers and narrative to identify trends, strengths, and concerns..."></textarea>
+        </div>
+        
+        <div class="section">
+            <label for="plan">P – Plan (Recommended Next Steps)</label>
+            <textarea id="plan" placeholder="Provide specific actionable recommendations for investors, analysts, or advisors..."></textarea>
+        </div>
+        
+        <button onclick="submitForFeedback()">🤖 Submit for AI Feedback</button>
+        
+        <div class="section">
+            <h3>🎤 Voice Agent Experience</h3>
+            <p><strong>Experience realistic financial analysis with AI-powered voice synthesis</strong></p>
+            <button onclick="generateEarningsCall()" style="background: #10b981; margin: 5px;">📞 Earnings Call Simulation</button>
+            <button onclick="generateAudioBriefing()" style="background: #8b5cf6; margin: 5px;">🎧 Executive Briefing</button>
+            <button onclick="generateInteractiveQuiz()" style="background: #f59e0b; margin: 5px;">🧠 Interactive Quiz</button>
+        </div>
+        
+        <div id="status"></div>
+        <div id="voice-status"></div>
+    </div>
+
+    <script>
+        async function submitForFeedback() {
+            const statusDiv = document.getElementById('status');
+            
+            // Get form data
+            const studentWork = {
+                subjective: document.getElementById('subjective').value,
+                metrics: document.getElementById('metrics').value,
+                assessment: document.getElementById('assessment').value,
+                plan: document.getElementById('plan').value
+            };
+            
+            // Show loading
+            statusDiv.innerHTML = '<div class="status">🔄 Analyzing your work...</div>';
+            
+            try {
+                const response = await fetch('http://localhost:8000/api/session/demo123/feedback', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        student_work: studentWork
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    const feedback = result.feedback;
+                    
+                    let feedbackHtml = `
+                        <div class="status success">
+                            <h3>📊 AI Feedback Results</h3>
+                            <p><strong>Overall Score: ${feedback.overall_score}/100 (Grade: ${feedback.grade})</strong></p>
+                            
+                            <h4>Section Scores:</h4>
+                            <ul>
+                                <li>Subjective: ${feedback.section_scores.subjective}/100</li>
+                                <li>Metrics: ${feedback.section_scores.metrics}/100</li>
+                                <li>Assessment: ${feedback.section_scores.assessment}/100</li>
+                                <li>Plan: ${feedback.section_scores.plan}/100</li>
+                            </ul>
+                            
+                            <h4>Feedback Comments:</h4>
+                            <ul>
+                                ${feedback.feedback_comments.map(comment => `<li>${comment}</li>`).join('')}
+                            </ul>
+                            
+                            ${feedback.improvements.length > 0 ? `
+                                <h4>Improvements:</h4>
+                                <ul>
+                                    ${feedback.improvements.map(improvement => `<li>${improvement}</li>`).join('')}
+                                </ul>
+                            ` : '<p><strong>🎉 No improvements needed - excellent work!</strong></p>'}
+                            
+                            <p><strong>Analysis:</strong> ${feedback.analysis.completeness} | Quality: ${feedback.analysis.quality} | Effort: ${feedback.analysis.effort}</p>
+                        </div>
+                    `;
+                    
+                    statusDiv.innerHTML = feedbackHtml;
+                } else {
+                    statusDiv.innerHTML = `<div class="status error">❌ Error: ${result.error || 'Unknown error'}</div>`;
+                }
+                
+            } catch (error) {
+                statusDiv.innerHTML = `<div class="status error">❌ Network Error: ${error.message}</div>`;
+            }
+        }
+        
+        // Test with sample data
+        function fillSampleData() {
+            document.getElementById('subjective').value = "Management expressed strong confidence in Q1 performance, highlighting robust revenue growth and disciplined expense management. The tone was optimistic about future opportunities in digital banking.";
+            document.getElementById('metrics').value = "Total revenue of $42.5B (+6.8% YoY), Net income $13.4B (+6.1% YoY), ROE 17.8%, CET1 ratio 15.9%, Net interest margin 2.74%";
+            document.getElementById('assessment').value = "JPMorgan demonstrates solid fundamental strength with revenue growth across segments. The fortress balance sheet provides flexibility for economic volatility while maintaining strong profitability metrics.";
+            document.getElementById('plan').value = "Monitor credit provision trends, assess interest rate sensitivity, evaluate investment banking recovery, track digital transformation progress";
+        }
+        
+        // Voice Agent Functions
+        async function generateEarningsCall() {
+            const voiceDiv = document.getElementById('voice-status');
+            voiceDiv.innerHTML = '<div class="status">🎤 Generating realistic earnings call simulation...</div>';
+            
+            try {
+                const response = await fetch('http://localhost:8000/api/session/demo123/voice', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        voice_type: 'earnings_call'
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    const content = result.voice_content;
+                    let html = `
+                        <div class="status success">
+                            <h3>📞 ${content.title}</h3>
+                            <p><strong>Duration:</strong> ${content.duration}</p>
+                            <p><strong>Audio URL:</strong> ${content.audio_url}</p>
+                            
+                            <h4>🎭 Participants:</h4>
+                            <div style="background: #f3f4f6; padding: 10px; border-radius: 5px; margin: 10px 0;">
+                                <p><strong>CEO:</strong> ${content.participants.ceo}</p>
+                                <p><strong>CFO:</strong> ${content.participants.cfo}</p>
+                                <p><strong>Analyst 1:</strong> ${content.participants.analyst_1}</p>
+                                <p><strong>Analyst 2:</strong> ${content.participants.analyst_2}</p>
+                                <p><strong>Analyst 3:</strong> ${content.participants.analyst_3}</p>
+                            </div>
+                            
+                            <h4>📝 Script Preview:</h4>
+                            <div style="background: #f9fafb; padding: 15px; border-radius: 5px; margin: 10px 0; max-height: 300px; overflow-y: auto;">
+                                <p><strong>CEO Opening:</strong> ${content.script.ceo_opening}</p>
+                                <p><strong>CFO Metrics:</strong> ${content.script.cfo_metrics}</p>
+                                <p><strong>Analyst Q1:</strong> ${content.script.analyst_qa_1}</p>
+                                <p><strong>CEO Response 1:</strong> ${content.script.ceo_response_1}</p>
+                                <p><strong>Analyst Q2:</strong> ${content.script.analyst_qa_2}</p>
+                                <p><strong>CEO Response 2:</strong> ${content.script.ceo_response_2}</p>
+                                <p><strong>Analyst Q3:</strong> ${content.script.analyst_qa_3}</p>
+                                <p><strong>CFO Response:</strong> ${content.script.cfo_response}</p>
+                                <p><strong>CEO Closing:</strong> ${content.script.ceo_closing}</p>
+                            </div>
+                            
+                            <h4>❓ Learning Questions:</h4>
+                            <ul>
+                                ${content.learning_questions.map(q => `<li>${q}</li>`).join('')}
+                            </ul>
+                            
+                            <h4>🎯 Key Takeaways:</h4>
+                            <ul>
+                                ${content.key_takeaways.map(t => `<li>${t}</li>`).join('')}
+                            </ul>
+                            
+                            <div style="background: #e0f2fe; padding: 10px; border-radius: 5px; margin: 10px 0;">
+                                <h5>🎤 Voice Features:</h5>
+                                <p>✅ Realistic voices for each participant</p>
+                                <p>✅ Natural conversation flow</p>
+                                <p>✅ Variety of analyst questions</p>
+                                <p>✅ Detailed management responses</p>
+                            </div>
+                            
+                            <p><em>🎧 Audio would be generated using ElevenLabs API in production</em></p>
+                        </div>
+                    `;
+                    voiceDiv.innerHTML = html;
+                } else {
+                    voiceDiv.innerHTML = `<div class="status error">❌ Error: ${result.error}</div>`;
+                }
+            } catch (error) {
+                voiceDiv.innerHTML = `<div class="status error">❌ Network Error: ${error.message}</div>`;
+            }
+        }
+        
+        async function generateAudioBriefing() {
+            const voiceDiv = document.getElementById('voice-status');
+            voiceDiv.innerHTML = '<div class="status">🎧 Generating executive briefing...</div>';
+            
+            try {
+                const response = await fetch('http://localhost:8000/api/session/demo123/voice', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        voice_type: 'audio_briefing'
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    const content = result.voice_content;
+                    let html = `
+                        <div class="status success">
+                            <h3>🎧 ${content.title}</h3>
+                            <p><strong>Duration:</strong> ${content.duration}</p>
+                            <p><strong>Narrator:</strong> ${content.narrator}</p>
+                            <p><strong>Audio URL:</strong> ${content.audio_url}</p>
+                            
+                            <h4>📋 Executive Summary:</h4>
+                            <div style="background: #f3f4f6; padding: 15px; border-radius: 5px; margin: 10px 0;">
+                                <p>${content.summary}</p>
+                            </div>
+                            
+                            <h4>⭐ Key Highlights:</h4>
+                            <ul>
+                                ${content.highlights.map(h => `<li>${h}</li>`).join('')}
+                            </ul>
+                            
+                            <h4>📊 SMAP Breakdown:</h4>
+                            <div style="background: #f9fafb; padding: 15px; border-radius: 5px; margin: 10px 0;">
+                                <p><strong>Subjective:</strong> ${content.smap_breakdown.subjective}</p>
+                                <p><strong>Metrics:</strong> ${content.smap_breakdown.metrics}</p>
+                                <p><strong>Assessment:</strong> ${content.smap_breakdown.assessment}</p>
+                                <p><strong>Plan:</strong> ${content.smap_breakdown.plan}</p>
+                            </div>
+                            
+                            <p><em>🎧 Audio would be generated using ElevenLabs API in production</em></p>
+                        </div>
+                    `;
+                    voiceDiv.innerHTML = html;
+                } else {
+                    voiceDiv.innerHTML = `<div class="status error">❌ Error: ${result.error}</div>`;
+                }
+            } catch (error) {
+                voiceDiv.innerHTML = `<div class="status error">❌ Network Error: ${error.message}</div>`;
+            }
+        }
+        
+        async function generateInteractiveQuiz() {
+            const voiceDiv = document.getElementById('voice-status');
+            voiceDiv.innerHTML = '<div class="status">🧠 Generating interactive quiz...</div>';
+            
+            try {
+                const response = await fetch('http://localhost:8000/api/session/demo123/voice', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        voice_type: 'interactive_quiz'
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    const content = result.voice_content;
+                    let html = `
+                        <div class="status success">
+                            <h3>🧠 ${content.title}</h3>
+                            <p><strong>Duration:</strong> ${content.duration}</p>
+                            <p><strong>Audio URL:</strong> ${content.audio_url}</p>
+                            
+                            <h4>❓ Quiz Questions:</h4>
+                            <div style="background: #f9fafb; padding: 15px; border-radius: 5px; margin: 10px 0;">
+                    `;
+                    
+                    content.questions.forEach((q, index) => {
+                        html += `
+                            <div style="margin: 15px 0; padding: 10px; border-left: 4px solid #3b82f6;">
+                                <p><strong>Question ${index + 1}:</strong> ${q.question}</p>
+                                <p><strong>Options:</strong></p>
+                                <ul>
+                                    ${q.options.map((option, i) => `<li>${String.fromCharCode(65 + i)}) ${option}</li>`).join('')}
+                                </ul>
+                                <p><strong>Correct Answer:</strong> ${String.fromCharCode(65 + q.correct)}) ${q.options[q.correct]}</p>
+                                <p><em>${q.explanation}</em></p>
+                            </div>
+                        `;
+                    });
+                    
+                    html += `
+                            </div>
+                            
+                            <div style="background: #e0f2fe; padding: 15px; border-radius: 5px; margin: 10px 0;">
+                                <h4>🎯 Final Score Explanation:</h4>
+                                <p>${content.final_score_explanation}</p>
+                            </div>
+                            
+                            <p><em>🎧 Audio would be generated using ElevenLabs API in production</em></p>
+                        </div>
+                    `;
+                    voiceDiv.innerHTML = html;
+                } else {
+                    voiceDiv.innerHTML = `<div class="status error">❌ Error: ${result.error}</div>`;
+                }
+            } catch (error) {
+                voiceDiv.innerHTML = `<div class="status error">❌ Network Error: ${error.message}</div>`;
+            }
+        }
+        
+        // Add sample data button
+        document.addEventListener('DOMContentLoaded', function() {
+            const button = document.querySelector('button');
+            const sampleButton = document.createElement('button');
+            sampleButton.textContent = '📝 Fill Sample Data';
+            sampleButton.style.background = '#10b981';
+            sampleButton.style.marginTop = '10px';
+            sampleButton.onclick = fillSampleData;
+            button.parentNode.insertBefore(sampleButton, button);
+        });
+    </script>
+</body>
+</html>
