@@ -6,6 +6,7 @@ import EnhancedAuthView from "./components/EnhancedAuthView";
 import useUser from "./hooks/useUser";
 import { useState } from "react";
 import Learn from "./components/Learn";
+import EnhancedLearn from "./components/EnhancedLearn";
 import Practice from "./components/Practice";
 import EnhancedPractice from "./components/EnhancedPractice";
 import SimplePractice from "./components/SimplePractice";
@@ -46,7 +47,8 @@ function App() {
             <main className="main-content">
               {file ? (
                 <Routes>
-                  <Route path="/" element={<Learn />} />
+                  <Route path="/" element={<EnhancedLearn />} />
+                  <Route path="/learn-old" element={<Learn />} />
                   <Route path="/practice" element={<SimplePractice />} />
                   <Route path="/practice-enhanced" element={<EnhancedPractice />} />
                   <Route path="/practice-old" element={<Practice />} />
